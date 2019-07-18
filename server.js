@@ -18,7 +18,10 @@ if (process.env.MONGODB_URI) {
 	mongoose.connect(process.env.MONGODB_URI);
 }
 else {
-	mongoose.connect(databaseUrl);
+	mongoose.connect(databaseUrl)
+		.then(()=>console.log("Database Connected"))
+		.catch(error=>console.log("error: " ,error))
+		
 };
 
 mongoose.Promise = Promise;
@@ -41,10 +44,8 @@ var port = process.env.PORT || 3000;
 app.use(logger("dev"));
 app.use(express.static("public"));
 app.use(body.urlencoded({extended: false}));
-app.use(method("_method"));
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
-
 app.listen(port, function() {
 	console.log("Listening on port " + port);
 })
