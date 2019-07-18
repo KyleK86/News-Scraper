@@ -16,22 +16,21 @@ var databaseUrl = 'mongodb://localhost/scrap';
 
 if (process.env.MONGODB_URI) {
 	mongoose.connect(process.env.MONGODB_URI);
-}
-else {
+} else {
 	mongoose.connect(databaseUrl)
-		.then(()=>console.log("Database Connected"))
-		.catch(error=>console.log("error: " ,error))
-		
+		.then(() => console.log("Database Connected"))
+		.catch(error => console.log("error: ", error))
+
 };
 
 mongoose.Promise = Promise;
 var db = mongoose.connection;
 
-db.on("error", function(error) {
+db.on("error", function (error) {
 	console.log("Mongoose Error: ", error);
 });
 
-db.once("open", function() {
+db.once("open", function () {
 	console.log("Mongoose connection successful.");
 });
 
@@ -43,11 +42,39 @@ var port = process.env.PORT || 3000;
 
 app.use(logger("dev"));
 app.use(express.static("public"));
-app.use(body.urlencoded({extended: false}));
-app.engine("handlebars", exphbs({defaultLayout: "main"}));
+app.use(body.urlencoded({
+	extended: false
+}));
+app.engine("handlebars", exphbs({
+	defaultLayout: "main"
+}));
 app.set("view engine", "handlebars");
-app.listen(port, function() {
+app.listen(port, function () {
 	console.log("Listening on port " + port);
 })
 
 // Routes
+
+app.post("/article", (req, res) => {
+	console.log(db);
+	
+	const {
+		URL,
+		title,
+		summary
+	} = req.body;
+	const newArticle = {
+		URL,
+		title,
+		summary
+	}
+	db.models.Article.create(newArticle)
+		.then(function (article) {
+			console.log("Successfully added article")
+			res.json(article);
+		})
+		.catch(function (err) {
+			console.log("Error adding article");
+			res.json(err);
+		});
+});
