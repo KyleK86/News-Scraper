@@ -78,3 +78,25 @@ app.post("/article", (req, res) => {
 			res.json(err);
 		});
 });
+
+app.post("/note", (req, res) => {
+	console.log(db);
+	
+	const {
+		articleID,
+		comment
+	} = req.body;
+	const newNote = {
+		articleID,
+		comment
+	}
+	db.models.Note.create(newNote)
+		.then(function (note) {
+			console.log("Successfully added note")
+			res.json(note);
+		})
+		.catch(function (err) {
+			console.log("Error adding note");
+			res.json(err);
+		});
+});
